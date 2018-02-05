@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Licensed under the Creative Commons Attribution 4.0 International license, 2018, Alex Anderson -->
+
+<project name="Dice">
+
+    <property name="src.dir" location="src" />
+    <property name="bin.dir" location="bin" />
+    <property name="test.dir" location="test" />
+    <property name="bin.src.dir" location="${bin.dir}/src" />
+    <property name="bin.test.dir" location="${bin.dir}/test" />
+    <property name="lib.dir" location="lib" />
+    <property name="lib.test.dir" location="${lib.dir}/test" />
+    <property name="report.dir" location="report" />
+    <property name="jar.dir" location="jar" />
+    <property name="jar.name" value="dice-1.jar" />
+
+    <target name="clean">
+        <delete dir="${bin.dir}" />
+        <delete dir="${report.dir}" />
+        <delete dir="${jar.dir}" />
+    </target>
+
+    <target name="build" depends="clean">
+        <mkdir dir="${bin.src.dir}" />
+        <javac srcdir="${src.dir}" destdir="${bin.src.dir}" includeantruntime="false" debug="true" />
+    </target>
+
+    <target name="test" depends="clean">
+        <!-- Build source with debug information -->
+        <mkdir dir="${bin.src.dir}" />
+        <javac srcdir="${src.dir}" destdir="${bin.src.dir}" debug="true" includeantruntime="false" />
+
+        <!-- Class path for test source -->
+        <path id="test.classpath">
+            <pathelement location="${bin.src.dir}" />
+            <fileset dir="${lib.test.dir}" includes="**/*.jar" />
+        </path>
+
+        <!-- Import coverage library -->
+        <taskdef resource="org/jacoco/ant/antlib.xml">
+            <classpath location="${lib.test.dir}/jacoco/jacocoant.jar"/>
+        </taskdef>
+
+        <!-- Build test source -->
+        <mkdir dir="${bin.test.dir}" />
+        <javac srcdir="${test.dir}" destdir="${bin.test.dir}" debug="true" includeantruntime="false">
+            <classpath refid="test.classpath" />
+        </javac>
+
+        <!-- Create test report directories -->
+        <property name="jacoco.report.dir" value="${report.dir}/jacoco/" />
+        <property name="junit.report.dir" value="${report.dir}/junit" />
+        <property name="jacoco.report.file" value="${jacoco.report.dir}/jacoco.exec" />
+
+        <mkdir dir="${jacoco.report.dir}" />
+        <mkdir dir="${junit.report.dir}" />
+
+        <!-- Execute tests -->
+        <coverage destfile="${jacoco.report.file}">
+            <junit fork="yes" dir="${bin.dir}">
+                <classpath>
+                    <path refid="test.classpath" />
+                    <pathelement location="${bin.test.dir}" />
+                </classpath>
+                <formatter type="xml" />
+                <batchtest todir="${junit.report.dir}">
+                    <fileset dir="${test.dir}" includes="**/*Test.java" />
+                </batchtest>
+            </junit>
+        </coverage>
+
+        <!-- Create JUnit report -->
+        <junitreport todir="${junit.report.dir}">
+            <fileset dir="${junit.report.dir}" includes="TEST-*.xml" />
+            <report todir="${junit.report.dir}" />
+        </junitreport>
+
+        <!-- Create JaCoCo report -->
+        <report>
+            <executiondata>
+                <file file="${jacoco.report.file}" />
+            </executiondata>
+            <structure name="${ant.project.name}">
+                <classfiles>
+                    <fileset dir="${bin.src.dir}" />
+                </classfiles>
+                <sourcefiles>
+                    <fileset dir="${src.dir}" />
+                </sourcefiles>
+            </structure>
+            <html destdir="${jacoco.report.dir}" />
+        </report>
+    </target>
+
+    <target name="jar" depends="build">
+        <jar destfile="${jar.dir}/${jar.name}">
+            <fileset dir="${bin.src.dir}" />
+        </jar>
+    </target>
+
+</project>
