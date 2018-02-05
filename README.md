@@ -1,6 +1,13 @@
 # WildPi-Dice
 This library provides both fair and weighted die for use in games.
 
+## Table of Contents
+1. [Building the JAR](building-the-jar)
+2. [Creating and Rolling a Die](creating-and-rolling-a-die)
+3. [Working with Weighted Die](working-with-weighted-die)
+4. [Working with "Fair" Die](working-with-fair-die)
+5. [Using Generics for Non-Standard Die](using-generics-for-non-standard-die)
+
 ### Building the JAR
 To build the JAR from source:
 1. Clone the repository
