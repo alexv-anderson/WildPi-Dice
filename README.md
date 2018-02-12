@@ -59,7 +59,7 @@ Die<Integer> weightedDie = DieBuilder.weightedDie(weights, values);
 ### Working with "Fair" Die
 A "fair" die is one where each of the die's values has an equal probability of being rolled. _(From a certain point of view, a "fair" die is simply a weighted die whose values have the same weight.)_
 
-"Fair" die can be created using the `DieBuilder as shown below:
+"Fair" die can be created using the `DieBuilder` as shown below:
 ```java
 Integer[] values = new Integer[] {1, 2, 3, 4, 5, 6};
 
